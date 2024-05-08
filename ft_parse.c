@@ -59,6 +59,18 @@ static int	get_envp(char **env, t_pipex *pipex)
 	return (0);
 }
 
+void	create_cmd_list(t_pipex *pipex, t_cmd *cmd_list, int cmd)
+{
+	if (ft_strnstr(cmd_lst->args, "/") == 0)
+		filename = cmd_list->args[0];
+	else
+	{
+		set_cmd_env(pipex, cmd_lst);
+		if (cmd == 0)
+			
+	}
+}
+
 /*	This function creates an array of pointers, each pointer points	*/
 /*	to another array of pointers who contains the variables to use	*/
 /*	for EXECVE funtion. 											*/
@@ -66,50 +78,31 @@ static int	get_envp(char **env, t_pipex *pipex)
 int	get_cmd(int ac, char **av, t_pipex *pipex)
 {
 	int	k;
-	int	cmd;
 	t_cmd	*cmd_lst;
 
-	cmd_lst = NULL;
-	k = 1;
-	cmd = 0;
+	k = 0;
 	pipex->cmds = ac - 3;
-	pipex->cmds_tab = (void **)malloc((sizeof(int *) * pipex->cmds) + 1);
-	if (pipex->cmds_tab == NULL)
-		return (1);
-	while (k <= pipex->cmds)
+	while (k < pipex->cmds)
 	{
-		k++;
 		cmd_lst = (t_cmd *)malloc(sizeof(t_cmd));
 		if (cmd_lst == NULL)
 		{
 			distroy_list(pipex, cmd_lst);// crear funcion para liberar memoria de el array y las estructuras;
 			exit (1);
 		}
-		pipex->cmds_tab[cmd++] = cmd_lst;
 		cmd_lst->args = ft_split(av[k], ' ');
 		if (cmd_lst->args == NULL)
 		{
 			distroy_list(pipex, cmd_lst); // y el las estructuras
-			return (1);
+			exit (1);
 		}
-		if (ft_strnstr(cmd_lst->args, "/") == 0)
-			set_cmd_path(pipex, cmd_lst);
-		else
-			set_cmd_env(pipex, cmd_lst);
+		create_cmd_list(pipex, cmd_list, k);
+		k++;
 	}
 	return (0);
 }
-// a mejorar con la nueva estructura
 
-
-
-
-int	set_cmd_path(t_pipex *pipex, t_cmd *cmd_lst)
-{
-
-}
-
-int set_cmd_env(t_pipex *pipex, t_cmd *cmd_lst)
+t_cmd	*set_cmd_env(t_pipex *pipex, t_cmd *cmd_lst)
 {
 	int	k;
 	char *cmd;
@@ -128,11 +121,13 @@ int set_cmd_env(t_pipex *pipex, t_cmd *cmd_lst)
 			cmd_lst->filename = cmd; /* si tengo acceso, apunto a la nueva direccion*/
 			free(cmd_lst->args[0]); /* libero la memoria del nombre del comando*/
 			cmd_lst->args[0] = cmd; /* asigno el nuevo comando con el path adecuado */
-			break ; /* salgo de la bucle */
+			return (cmd_lst); /* salgo de la bucle */
 		}
 		free(cmd);
 		k++;
 	}
+	filename = cmd_list->args; 
+	return (cmd_lst);
 }
 
 //

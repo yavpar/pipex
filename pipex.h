@@ -27,6 +27,7 @@ typedef struct	s_cmd
 	char		*filename;
 	int			fd[2];
 	int			pid;
+	struct s_cmd	*next;
 }				t_cmd;
 
 void	ft_parse(int ac, char **av, char **env);
