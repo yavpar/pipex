@@ -6,7 +6,7 @@
 #    By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/13 14:44:05 by yparthen          #+#    #+#              #
-#    Updated: 2024/05/11 15:21:56 by yparthen         ###   ########.fr        #
+#    Updated: 2024/05/17 17:47:38 by yparthen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,8 @@ CFLAGS = -Wall -Wextra -Werror
 INC_FLAGS = -I$(INC_DIR)
 
 #	source files
-SRCS = 	main.c ft_parse.c split_add_slash.c \
+SRCS = 	main.c ft_parse.c split_add_slash.c ft_files.c \
+		pipex.c ft_wait_pids.c destroy_list.c
 
 
 # Objetivos predeterminados

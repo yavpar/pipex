@@ -6,58 +6,174 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 15:39:26 by yparthen          #+#    #+#             */
-/*   Updated: 2024/05/11 17:53:49 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/05/18 17:04:00 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	pipex(t_pipex *pipex, t_list *cmds_list)
-{
-	int		k;
-	t_list	*cmd;
+static void	first_child(t_pipex *p);
+static void	last_child(t_pipex *p);
 
-	k = 1;
-	cmd = cmds_list;
-	while (k <= pipex->cmds)
-	{
-		if (pipe(((t_cmd *)cmd->content)->tube) == -1)
-			destroy_list(pipex, cmds_list);
-		((t_cmd *)cmd->content)->pid = fork();
-		if (((t_cmd *)cmd->content)->pid == -1)
-			destroy_list(pipex, cmds_list);
-		if (((t_cmd *)cmd->content)->pid == 0)
-			child_process(pipex, cmds_list, k);
-		else
-		{
-			if (close(((t_cmd *)cmd->content)->tube[1] == -1))
-				destroy_list(pipex, cmds_list);
-			if (cmd->next != NULL)
-				cmd = cmd->next;
-		}
-		k++;
-	}
+int	pipex(t_pipex *p)
+{
+	t_cmd	*cmd1;
+	t_cmd	*cmd2;
+
+	cmd1 = p->cmd_1;
+	cmd2 = p->cmd_2;
+	if (pipe(p->tube) == -1)
+		(destroy_list(p), exit (7));
+	cmd1->pid = fork();
+	if (cmd1->pid == -1)
+		(ft_printf("%s", FORK1_ERR), exit (8));
+	if (cmd1->pid == 0)
+		first_child(p);
+	if (close(p->tube[WRITE_END]) == 1)
+		destroy_list(p);
+	cmd2->pid = fork();
+	if (cmd2->pid == -1)
+		(ft_printf("%s", FORK2_ERR), exit (9));
+	if (cmd2->pid == 0)
+		last_child(p);
+	if (close(p->tube[READ_END]) == -1)
+		destroy_list(p);
+	return (0);
 }
 
-void	child_process(t_pipex *pipex, t_list *cmd_struct, int cmd)
-{
-	if (cmd == 1)
-		first_child(pipex, cmd_struct);
-	else if (cmd - 1 == 0)
-		last_child(pipex, cmd_struct);
-}
 /* stdin = 0 stdout = 1*/
-void	first_child(t_pipex *pipex, t_list *cmd)
+static void	first_child(t_pipex *p)
 {
-	if (dup2(((t_cmd *)cmd->content)->tube[1], STDOUT_FILENO) == -1)
-		destroy_list(pipex, cmd);
-	if (close(((t_cmd *)cmd->content)->tube[0]) == -1)
-		destroy_list(pipex, cmd);
-	if (dup2(pipex->fd_infile, STDIN_FILENO) == -1)
-		destroy_list(pipex, cmd);
-	if (close(pipex->fd_infile) == -1)
-		destroy_list(pipex, cmd);
-	if (execve(((t_cmd *)cmd->content)->filename, ((t_cmd *)cmd->content)->args,
-			pipex->env_path))
-		destroy_list(pipex, cmd);
+	if (close(p->tube[READ_END]) == -1) /*Cerrar el extremo de lectura del pipe*/
+		destroy_list(p);
+	if (dup2(p->tube[WRITE_END], STDOUT_FILENO) == -1)
+		destroy_list(p);
+	if (dup2(p->fd_infile, STDIN_FILENO) == -1)
+		destroy_list(p);
+	if (close(p->fd_infile) == -1)
+	 	destroy_list(p);
+	if (close(p->tube[WRITE_END]) == -1)
+		destroy_list(p);
+	execve(p->cmd_1->pathname, p->cmd_1->args, p->env_path);
+	destroy_list(p);
+	perror("execve cmd1");
 }
+
+static void	last_child(t_pipex *p)
+{
+	if (dup2(p->tube[READ_END], STDIN_FILENO) == -1)
+		destroy_list(p);
+	if (dup2(p->fd_outfile, STDOUT_FILENO) == -1)
+		destroy_list(p);
+	if (close(p->tube[READ_END]) == -1)
+		destroy_list(p);
+	if (close(p->fd_outfile) == -1)
+		destroy_list(p);
+	execve(p->cmd_2->pathname, p->cmd_2->args, p->env_path);
+	destroy_list(p);
+	perror("execve cmd");
+}
+/*
+int pipex(t_pipex *p)
+{
+    int k;
+    t_list *cmd = p->cmds_list;
+    int fd_prev_read = p->fd_infile; // Descriptor de archivo para leer desde el archivo de entrada inicial
+
+    for (k = 1; k <= p->cmds; k++)
+    {
+        int pipe_fd[2]; // Array para almacenar los descriptores de archivo del pipe
+
+        // Crear el pipe
+        if (pipe(pipe_fd) == -1)
+        {
+            perror("pipe");
+            return 1;
+        }
+
+        pid_t pid = fork(); // Crear un nuevo proceso hijo
+
+        if (pid == -1)
+        {
+            perror("fork");
+            return 1;
+        }
+        else if (pid == 0) // Proceso hijo
+        {
+            close(pipe_fd[0]); // Cerrar el extremo de lectura del pipe
+
+            if (k == 1) // Primer comando
+            {
+                // Redirigir la salida estándar al extremo de escritura del pipe
+                if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+                {
+                    perror("dup2");
+                    return 1;
+                }
+            }
+            else if (k == p->cmds) // Último comando
+            {
+                // Redirigir la entrada estándar desde el extremo de lectura del pipe
+                if (dup2(fd_prev_read, STDIN_FILENO) == -1)
+                {
+                    perror("dup2");
+                    return 1;
+                }
+            }
+            else // Comandos intermedios
+            {
+                // Redirigir la entrada estándar desde el extremo de lectura del pipe anterior
+                if (dup2(fd_prev_read, STDIN_FILENO) == -1)
+                {
+                    perror("dup2");
+                    return 1;
+                }
+
+                // Redirigir la salida estándar al extremo de escritura del pipe
+                if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+                {
+                    perror("dup2");
+                    return 1;
+                }
+            }
+
+            // Cerrar descriptores de archivo no necesarios
+            close(pipe_fd[1]);
+            close(fd_prev_read);
+
+            // Ejecutar el comando
+            execve(((t_cmd *)cmd->content)->filename, ((t_cmd *)cmd->content)->args, p->env_path);
+
+            // Si execve falla, imprimir un mensaje de error
+            perror("execve");
+            return 1;
+        }
+        else // Proceso padre
+        {
+            close(pipe_fd[1]); // Cerrar el extremo de escritura del pipe en el proceso padre
+
+            // Si no es el primer comando, cerrar el descriptor de archivo de lectura anterior
+            if (k != 1)
+                close(fd_prev_read);
+
+            // Guardar el descriptor de archivo de lectura para el próximo comando
+            fd_prev_read = pipe_fd[0];
+
+            // Mover al siguiente comando en la lista
+            cmd = cmd->next;
+        }
+    }
+
+    // Esperar a que todos los procesos hijos terminen
+    for (k = 0; k < p->cmds; k++)
+    {
+        if (wait(NULL) == -1)
+        {
+            perror("wait");
+            return 1;
+        }
+    }
+
+    return 0;
+}
+*/
