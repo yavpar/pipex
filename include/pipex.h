@@ -40,6 +40,8 @@ typedef struct s_pipex
 	char	**env_path;
 	t_cmd	*cmd_1;
 	t_cmd	*cmd_2;
+	int		access1;
+	int		access2;
 }			t_pipex;
 
 /*	FOR PARSING ARGUMENTS	*/
@@ -51,7 +53,7 @@ void	close_files(t_pipex *p);
 
 /*	FOR EXECUTING BINARYS	*/
 int		pipex(t_pipex *p);
-void	wait_pids(t_pipex *p);
+int		wait_pids(t_pipex *p);
 
 /*	UTILS	*/
 void	destroy_list(t_pipex *p);

@@ -6,29 +6,30 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 14:12:17 by yparthen          #+#    #+#             */
-/*   Updated: 2024/05/18 19:03:38 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/05/27 17:03:26 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
 static int	get_envp(char **env, t_pipex *p);
-static char	*get_pathname(char **env_path, char *cmd);
+static char	*get_pathname(char **env, char *cmd, t_pipex *p, int ncmd);
+static void	make_path(char *path, char *s1, char *s2);
 
 int	parse(int ac, char **av, char **envp, t_pipex *p)
 {
 	if (!av[1] || !av[2] || !av[3] || !av[4])
 	{
 		ft_printf("%s", STR_ERR);
-		exit(EXIT_FAILURE);
+		exit(2);
 	}
 	if (open_files(av[1], av[ac - 1], p) != 0)
-		exit(EXIT_FAILURE);
+		exit(3);
 	if (get_envp(envp, p) != 0)
 	{
 		close_files(p);
-		ft_printf("ENVP_ERR");
-		exit(EXIT_SUCCESS);
+		ft_printf("%s", ENVP_ERR);
+		exit(4);
 	}
 	init_var(p, av);
 	return (0);
@@ -58,30 +59,6 @@ static int	get_envp(char **env, t_pipex *p)
 	return (0);
 }
 
-/*	This function defines "filename"	*/
-
-static char	*get_pathname(char **env_path, char *cmd)
-{
-	int		k;
-	char	*pathname;
-	
-	k = 0;
-	pathname = NULL;
-	if (ft_char_in_str(cmd, '/') == 1)
-		return (cmd);
-	while (env_path[k])
-	{
-		pathname = ft_strjoin(env_path[k], cmd);
-		if (pathname == NULL)
-			continue ;
-		if (access(pathname, X_OK || F_OK) == 0)
-			return (pathname);
-		free(pathname);
-		k++;
-	}
-	return (cmd);
-}
-
 void	init_var(t_pipex *p, char **av)
 {
 	p->cmd_1 = malloc(sizeof(t_cmd));
@@ -89,21 +66,79 @@ void	init_var(t_pipex *p, char **av)
 	{
 		close_files(p);
 		destroy_list(p);
-		exit (EXIT_FAILURE);
+		exit(5);
 	}
 	p->cmd_2 = malloc(sizeof(t_cmd));
 	if (!p->cmd_2)
 	{
 		close_files(p);
 		destroy_list(p);
-		exit(EXIT_FAILURE);
+		exit(6);
 	}
 	p->tube[0] = -1;
 	p->tube[1] = -1;
 	p->cmd_1->pid = -1;
 	p->cmd_2->pid = -1;
+	p->access1 = 0;
+	p->access2 = 0;
 	p->cmd_1->args = ft_split(av[2], ' ');
-	p->cmd_1->pathname = get_pathname(p->env_path, p->cmd_1->args[0]);
+	p->cmd_1->pathname = get_pathname(p->env_path, p->cmd_1->args[0], p, 1);
 	p->cmd_2->args = ft_split(av[3], ' ');
-	p->cmd_2->pathname = get_pathname(p->env_path, p->cmd_2->args[0]);
+	p->cmd_2->pathname = get_pathname(p->env_path, p->cmd_2->args[0], p, 2);
 }
+
+/*	This function sets the filename as "/path/to/cmd"	*/
+static char	*get_pathname(char **env, char *cmd, t_pipex *p, int ncmd)
+{
+	int		k;
+	char	*path;
+
+	k = 0;
+	path = NULL;
+	if (ft_char_in_str(cmd, '/') == 1)
+		return (cmd);
+	while (env[k])
+	{
+		path = malloc((ft_strlen(env[k]) + ft_strlen(cmd) + 1) * sizeof(char));
+		if (path == NULL)
+			continue ;
+		make_path(path, env[k], cmd);
+		if (access(path, X_OK) == 0)
+		{
+			if (ncmd == 1)
+				p->access1 = 1;
+			else
+				p->access2 = 1;
+			return (path);
+		}
+		k++;
+		free(path);
+	}
+	return (cmd);
+}
+
+/*	This function concatenate the path and the binary command	*/
+/*	as "/path/to/cmd"											*/
+static void	make_path(char *path, char *s1, char *s2)
+{
+	int	k;
+	int	j;
+
+	k = 0;
+	j = 0;
+	while (s1[k])
+	{
+		path[j] = s1[k];
+		j++;
+		k++;
+	}
+	k = 0;
+	while (s2[k])
+	{
+		path[j] = s2[k];
+		j++;
+		k++;
+	}
+	path[j] = '\0';
+}
+

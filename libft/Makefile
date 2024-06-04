@@ -6,7 +6,7 @@
 #    By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/13 14:44:05 by yparthen          #+#    #+#              #
-#    Updated: 2024/05/08 15:33:17 by yparthen         ###   ########.fr        #
+#    Updated: 2024/06/04 14:08:43 by yparthen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,9 +47,5 @@ fclean : clean
 	@ rm -rf $(NAME)
 
 re : fclean all
-
-# so:
-# 	@ $(CC) -nostartfiles -fPIC $(CFLAGS) $(SRC)
-# 	@ gcc -nostartfiles -shared -o libft.so $(OBJ)
 
 .PHONY : re clean fclean so all
