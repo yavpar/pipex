@@ -6,7 +6,7 @@
 #    By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/13 14:44:05 by yparthen          #+#    #+#              #
-#    Updated: 2024/06/04 14:08:43 by yparthen         ###   ########.fr        #
+#    Updated: 2024/06/08 18:21:19 by yparthen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,4 +48,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : re clean fclean so all
+.PHONY : re clean fclean all

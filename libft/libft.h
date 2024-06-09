@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 14:42:24 by yparthen          #+#    #+#             */
-/*   Updated: 2024/05/08 15:33:55 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/08 18:26:26 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,7 @@ void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
-void				ft_free_array(void **s, int size_s,
-						void (ft_free)(void *));
+void				ft_free_array(void **s, int size_s);
 void				ft_free(void *data);
 int					ft_char_in_str(char *s, int c);
 

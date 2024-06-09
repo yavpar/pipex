@@ -6,7 +6,7 @@
 #    By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/13 14:44:05 by yparthen          #+#    #+#              #
-#    Updated: 2024/06/04 14:09:17 by yparthen         ###   ########.fr        #
+#    Updated: 2024/06/08 15:37:41 by yparthen         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ INC_FLAGS = -I$(INC_DIR)
 
 #	source files
 SRCS = 	main.c ft_parse.c split_add_slash.c ft_files.c \
-		pipex.c ft_wait_pids.c destroy_list.c
+		pipex.c ft_wait_pids.c destroy_exit.c
 
 # Objetivos predeterminados
 all : $(LIBFT) $(PROGNAME)
