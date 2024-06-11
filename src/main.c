@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 14:02:02 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/09 14:07:20 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:25:52 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ int	main(int ac, char **av, char **envp)
 		return (destroy_list(&p), 1);
 	}
 	pipex(&p);
-	ft_printf("En MAIN:\n");
 	close_files(4,p.fdin, p.fdout, p.tube[0], p.tube[1]);
 	ws = wait_pids(&p);
 	destroy_list(&p);

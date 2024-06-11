@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 18:03:05 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/09 14:09:13 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:12:58 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 # include <unistd.h>
 
 # define FLAG_FDIN (O_RDONLY)
-//# define FLAG_FDOUT (O_CREAT | O_WRONLY | O_TRUNC)
 # define READ_END 0
 # define WRITE_END 1
 # define INPUT_ERR1 "Not enough arguments in the command line\n"
