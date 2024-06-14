@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 14:40:01 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/08 18:30:07 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/14 17:19:22 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static char	*gen_word(char *s, char separator)
 	k = 0;
 	while (s[len_word] && s[len_word] != separator)
 		len_word++;
-	new_word = (char *)malloc((len_word + 2) * sizeof(char));
+	new_word = (char *)ft_calloc((len_word + 2), sizeof(char));
 	if (!new_word)
 		return (NULL);
 	new_word[len_word] = '\0';

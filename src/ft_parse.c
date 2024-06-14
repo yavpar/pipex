@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 14:12:17 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/09 14:06:57 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/14 17:18:40 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static int	get_envp(char **env, t_pipex *p);
 static char	*get_pathname(char **env, char *cmd, t_pipex *p, int ncmd);
 static void	make_path(char *path, char *s1, char *s2);
+static void	set_var(t_pipex *p, char **av);
 
 int	parse(int ac, char **av, char **envp, t_pipex *p)
 {
@@ -30,7 +31,7 @@ int	parse(int ac, char **av, char **envp, t_pipex *p)
 		close_files(2, p->fdin, p->fdout);
 		exit(1);
 	}
-	init_var(p, av);
+	set_var(p, av);
 	return (0);
 }
 
@@ -58,20 +59,14 @@ static int	get_envp(char **env, t_pipex *p)
 	return (0);
 }
 
-void	init_var(t_pipex *p, char **av)
+static void	set_var(t_pipex *p, char **av)
 {
-	p->cmd_1 = malloc(sizeof(t_cmd));
+	p->cmd_1 = ft_calloc(1, sizeof(t_cmd));
 	if (!p->cmd_1)
 		fatal_error(p, 1);
-	p->cmd_2 = malloc(sizeof(t_cmd));
+	p->cmd_2 = ft_calloc(1, sizeof(t_cmd));
 	if (!p->cmd_2)
 		fatal_error(p, 1);
-	p->tube[0] = -1;
-	p->tube[1] = -1;
-	p->cmd_1->pid = -1;
-	p->cmd_2->pid = -1;
-	p->access1 = 0;
-	p->access2 = 0;
 	p->cmd_1->args = ft_split(av[2], ' ');
 	p->cmd_1->pathname = get_pathname(p->env_path, p->cmd_1->args[0], p, 1);
 	p->cmd_2->args = ft_split(av[3], ' ');
@@ -85,15 +80,16 @@ static char	*get_pathname(char **env, char *cmd, t_pipex *p, int ncmd)
 	char	*path;
 
 	k = -1;
+	path = NULL;
 	if (cmd == NULL)
 		return (cmd);
 	if (ft_char_in_str(cmd, '/') == 1)
 		return (cmd);
 	while (cmd && env[++k])
 	{
-		path = malloc((ft_strlen(env[k]) + ft_strlen(cmd) + 1) * sizeof(char));
+		path = ft_calloc((ft_strlen(env[k]) + ft_strlen(cmd) + 1), sizeof(char));
 		if (path == NULL)
-			continue ;
+			fatal_error(p, 1);
 		make_path(path, env[k], cmd);
 		if (access(path, X_OK) == 0)
 		{
