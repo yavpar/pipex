@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 18:03:05 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/14 17:16:30 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/15 19:42:49 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ typedef struct s_cmd
 
 typedef struct s_pipex
 {
-	char	*progname;
 	int		fdin;
 	int		fdout;
 	int		tube[2];
+	int		fd_err[2];
 	char	**env_path;
 	t_cmd	*cmd_1;
 	t_cmd	*cmd_2;
@@ -74,5 +74,7 @@ void		destroy_list(t_pipex *p);
 char		**split_add_slash(char *s, char sep);
 void		print_err(char *err);
 void		fatal_error(t_pipex *p, int err);
+void		printf_fd(int fd, char *s1, char *s2);
+int			read_and_print_errors(int fd_error);
 
 #endif

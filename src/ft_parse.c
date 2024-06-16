@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 14:12:17 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/14 17:18:40 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/14 23:01:39 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ static char	*get_pathname(char **env, char *cmd, t_pipex *p, int ncmd)
 	char	*path;
 
 	k = -1;
-	path = NULL;
 	if (cmd == NULL)
 		return (cmd);
 	if (ft_char_in_str(cmd, '/') == 1)
