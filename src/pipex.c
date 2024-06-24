@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/08 15:39:26 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/15 23:27:17 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/16 17:38:01 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	first_child(t_pipex *p);
 static void	last_child(t_pipex *p);
 
 int	pipex(t_pipex *p)
-{	
+{
 	if (pipe(p->fd_err) == -1)
 		fatal_error(p, 1);
 	p->cmd_1->pid = fork();
@@ -43,6 +43,11 @@ static void	first_child(t_pipex *p)
 	if (dup2(p->fdin, STDIN_FILENO) == -1)
 		fatal_error(p, 1);
 	close_files(4, p->fdin, p->fdout, p->tube[READ_END], p->tube[WRITE_END]);
+	if (p->error_cmd1 == 1)
+	{
+		write(p->fd_err[WRITE_END], "Command '' not found\n", 21);
+		fatal_error(p, 127);
+	}
 	execve(p->cmd_1->pathname, p->cmd_1->args, p->env_path);
 	printf_fd(p->fd_err[WRITE_END], p->cmd_1->args[0], strerror(errno));
 	fatal_error(p, 127);
@@ -56,6 +61,11 @@ static void	last_child(t_pipex *p)
 	if ((dup2(p->fdout, STDOUT_FILENO)) == -1)
 		fatal_error(p, 1);
 	close_files(4, p->fdin, p->fdout, p->tube[READ_END], p->tube[WRITE_END]);
+	if (p->error_cmd2 == 1)
+	{
+		write(p->fd_err[WRITE_END], "Command '' not found\n", 21);
+		fatal_error(p, 127);
+	}
 	execve(p->cmd_2->pathname, p->cmd_2->args, p->env_path);
 	printf_fd(p->fd_err[WRITE_END], p->cmd_2->args[0], strerror(errno));
 	fatal_error(p, 127);

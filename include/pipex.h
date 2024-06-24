@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 18:03:05 by yparthen          #+#    #+#             */
-/*   Updated: 2024/06/15 19:42:49 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/16 17:50:28 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,9 @@
 # define OUTFILE_ERR "File not opened\n"
 # define FORK1_ERR "FORK: First fork not executed\n"
 # define FORK2_ERR "FORK: Second fork not executed\n"
-# define STR_ERR "There are one or several empty strings\n"
+# define STR_ERR "pipex: There are one or several empty strings\n"
 # define ENVP_ERR "ENVP: problem with malloc"
+# define BUFERSIZE 1024
 
 typedef struct s_cmd
 {
@@ -56,6 +57,8 @@ typedef struct s_pipex
 	int		access2;
 	char	*arg1;
 	char	*arg2;
+	int		error_cmd1;
+	int		error_cmd2;
 }			t_pipex;
 
 /*	FOR PARSING ARGUMENTS	*/
@@ -76,5 +79,6 @@ void		print_err(char *err);
 void		fatal_error(t_pipex *p, int err);
 void		printf_fd(int fd, char *s1, char *s2);
 int			read_and_print_errors(int fd_error);
+int			len_cmds(char **cmd);
 
 #endif

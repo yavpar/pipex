@@ -6,7 +6,7 @@
 /*   By: yparthen <yparthen@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 14:32:58 by yparthen          #+#    #+#             */
-/*   Updated: 2024/05/27 16:49:46 by yparthen         ###   ########.fr       */
+/*   Updated: 2024/06/16 16:25:51 by yparthen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void	free_child1(t_pipex *p)
 		}
 		free(p->cmd_1->args);
 		if (p->access1)
-		 	free(p->cmd_1->pathname);
+			free(p->cmd_1->pathname);
 	}
 	free(p->cmd_1);
 	p->cmd_1 = NULL;
